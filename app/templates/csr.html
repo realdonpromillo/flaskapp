@@ -1,0 +1,11 @@
+{% extends "base.html" %}
+
+{% block content %}
+<h1>CSR and Key</h1>
+<p>{CSR:}</p>
+<pre>{{ csr }}</pre>
+<p>Key:</p>
+<pre>{{ key }}</pre>
+<p><a href="{{ url_for('generate_csr', filename='csr.pem') }}" download>Download CSR</a></p>
+
+{% endblock %}

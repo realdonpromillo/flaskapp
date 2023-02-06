@@ -1,0 +1,11 @@
+{% extends "base.html" %}
+
+{% block content %}
+    <h1>User: {{ user.username }}</h1>
+    <hr>
+    {% for certificate in certificates %}
+    <p>
+    {{ certificate.timestamp }}: <b>Common Name: {{ certificate.cn }}, Organization: {{ certificate.organization }}, CSR: {{ certificate.csr }}</b>
+    </p>
+    {% endfor %}
+{% endblock %}
