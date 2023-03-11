@@ -45,7 +45,7 @@ class ResetPasswordForm(FlaskForm):
 
 class CertForm(FlaskForm):
     common_name = StringField('Common Name', validators=[DataRequired()])
-    csr = StringField('CSR', validators=[DataRequired()])
+    certificate = TextAreaField('Certificate', validators=[DataRequired()])
     password = PasswordField('Password', validators=[DataRequired()])
     submit = SubmitField('Generate P12')
 
@@ -71,4 +71,8 @@ class EditProfileForm(FlaskForm):
             if user is not None:
                 raise ValidationError('Please use a different email address.')
     
-            
+class ConvertCertificateForm(FlaskForm):
+    private_key = TextAreaField('Private Key', validators=[DataRequired()])
+    public_key = TextAreaField('Public Key', validators=[DataRequired()])
+    password = PasswordField('Password', validators=[DataRequired()])
+    submit = SubmitField('Submit')           

@@ -1,7 +1,7 @@
 from io import BytesIO
 from flask import render_template, flash, redirect, url_for, make_response, send_file, Response
 from app import app, db
-from app.forms import LoginForm, RegistrationForm, CSRForm, CertForm, EditProfileForm, ResetPasswordForm
+from app.forms import LoginForm, RegistrationForm, CSRForm, CertForm, EditProfileForm, ResetPasswordForm, ConvertCertificateForm
 from flask_login import current_user, login_user
 from app.models import User, Certificate
 from flask_login import logout_user
@@ -10,6 +10,7 @@ from flask import request
 from werkzeug.urls import url_parse
 from OpenSSL import crypto
 from OpenSSL import SSL
+import base64
 from datetime import datetime
 
 
@@ -18,17 +19,8 @@ from datetime import datetime
 @login_required
 def index():
     user = {'username': 'test'}
-    certificate = [
-        {
-            'author': {'username': 'John'},
-            'body': 'Beautiful day in Portland!'
-        },
-        {
-            'author': {'username': 'Susan'},
-            'body': 'The Avengers movie was so cool!'
-        }
-    ]
-    return render_template("index.html", title='Home Page', certificate=certificate)
+
+    return render_template("index.html", title='Home Page')
 
 @app.route('/login', methods=['GET', 'POST'])
 def login():
@@ -115,11 +107,7 @@ def generate_csr():
         db.session.commit()
         
         #response = b'\n'.join([csr, key])
-        csr_io =BytesIO(csr)
-        csr_io.seek(0)
-        return render_template('csr.html', csr=csr, key=key, csr_file=csr_io)
-        #return send_file(csr_io,download_name='csr.pem', mimetype='text/plain', as_attachment=True )
-        ##return Response(response, mimetype='text/plain')
+        return render_template('csr.html', csr=csr, key=key)
 
 
     return render_template("generate_csr.html", title='Generate CSR', form=form)
@@ -129,39 +117,107 @@ def generate_csr():
 def download_certificate():
     form = CertForm()
     if form.validate_on_submit():
-        # Get form data
-        data = request.form
-        common_name = data['common_name']
-        csr = data['csr']
-        password = data['password']
-        #signed_request = request.files["signed_request"].read()
+        try:
+            # Load the existing key from the database
+            existing_key = Certificate.query.filter_by(common_name=form.common_name.data).first()
+            private_key = existing_key.key
+            if not existing_key:
+                flash('The Private Key for the Common Name in the CSR does not exist in the database')
+                return render_template('download_error.html', title='Error')
+
+            # decode the private and public keys from base64 and add padding if needed
+            certificate = (form.certificate.data)
+            passphrase = (form.password.data)
+            
+            # Load private key
+            pkey = crypto.load_privatekey(crypto.FILETYPE_PEM, private_key)
+
+            # Load public key (certificate)
+            cert = crypto.load_certificate(crypto.FILETYPE_PEM, certificate)
+            
+            # Create PKCS#12 (PFX) file
+            pfx = crypto.PKCS12()
+            pfx.set_privatekey(pkey)
+            pfx.set_certificate(cert)
+            pfx_data = pfx.export(passphrase=passphrase)
+
+            # Return the PFX as a download
+            response = make_response(pfx_data)
+            response.headers.set('Content-Disposition', 'attachment', filename='certificate.pfx')
+            response.headers.set('Content-Type', 'application/x-pkcs12')
+            return response
         
-        # Load the signed certificate
-        cert = crypto.load_certificate(crypto.FILETYPE_PEM, csr)
+        except Exception as e:
+            error_message = str(e)
+            return render_template('convert_error.html', title='Error Converting Certificate', error_message=error_message)
+               
+    return render_template('download_certificate.html', title='Download Certificate', form=form)
+
+@app.route('/convert_certificate', methods=['GET', 'POST'])
+def convert_certificate():
+    form = ConvertCertificateForm()
+    if form.validate_on_submit():
+        try:
+            # decode the private and public keys from base64 and add padding if needed
+            private_key = (form.private_key.data)
+            public_key = (form.public_key.data)
+            passphrase = (form.password.data)
+            
+            # Load private key
+            pkey = crypto.load_privatekey(crypto.FILETYPE_PEM, private_key)
+
+            # Load public key (certificate)
+            cert = crypto.load_certificate(crypto.FILETYPE_PEM, public_key)
+            
+            # Create PKCS#12 (PFX) file
+            pfx = crypto.PKCS12()
+            pfx.set_privatekey(pkey)
+            pfx.set_certificate(cert)
+            pfx_data = pfx.export(passphrase=passphrase)
+
+            # Return the PFX as a download
+            response = make_response(pfx_data)
+            response.headers.set('Content-Disposition', 'attachment', filename='certificate.pfx')
+            response.headers.set('Content-Type', 'application/x-pkcs12')
+            return response
         
-        # Get the private key from the database
-        cursor = cnx.cursor()
-        select_query = "SELECT key FROM Certificate WHERE username = %s AND common_name = %s"
-        cursor.execute(select_query, (session["username"], cert.get_subject().CN))
-        result = cursor.fetchone()
-        encrypted_key = result[0]
+        except Exception as e:
+            error_message = str(e)
+            return render_template('convert_error.html', title='Error Converting Certificate', error_message=error_message)
         
-        # Decrypt the private key
-        private_key_pem = cipher_suite.decrypt(encrypted_key).decode("utf-8")
-        private_key = crypto.load_privatekey(crypto.FILETYPE_PEM, private_key_pem)
-        
-        # Create a PFX file
-        pfx = crypto.PKCS12()
-        pfx.set_certificate(cert)
-        pfx.set_privatekey(private_key)
-        
-        # Return the PFX file to the user
-        response = make_response(pfx.export())
-        response.headers["Content-Disposition"] = "attachment; filename=certificate.pfx"
-        response.headers["Content-Type"] = "application/x-pkcs12"
-        return response
-        
-    return render_template("download_certificate.html", title='Generate Certificate', form=form)
+    return render_template('convert_certificate.html', title='Convert Certificate', form=form)    
+
+@app.route('/csr/download')
+@login_required
+def download_new_csr():
+    cert = Certificate.query.filter_by(author=current_user).order_by(Certificate.id.desc()).first()
+    file_data = cert.csr
+    # Create an in-memory file-like object
+    file_stream = BytesIO(file_data)
+    # Set the file stream's position to the beginning
+    file_stream.seek(0)
+    # Return the file as an attachment
+    filename = cert.cn + '.csr'
+    response = make_response(file_stream.getvalue())
+    response.headers['Content-Disposition'] = 'attachment; filename={}'.format(filename)
+    response.mimetype = 'text/plain'
+    return response
+
+@app.route('/key/download')
+@login_required
+def download_new_key():
+    key = Certificate.query.filter_by(author=current_user).order_by(Certificate.id.desc()).first()
+    file_data = key.key
+    # Create an in-memory file-like object
+    file_stream = BytesIO(file_data)
+    # Set the file stream's position to the beginning
+    file_stream.seek(0)
+    # Return the file as an attachment
+    filename = key.cn + '.key'
+    response = make_response(file_stream.getvalue())
+    response.headers['Content-Disposition'] = 'attachment; filename={}'.format(filename)
+    response.mimetype = 'text/plain'
+    return response
 
 @app.route('/certificate/<int:id>/download')
 @login_required
@@ -211,22 +267,12 @@ def edit_profile():
         current_user.email = form.email.data
         db.session.commit()
         flash('Your changes have been saved.')
-        return redirect(url_for('profile_updated'))
+        return redirect(url_for('edit_profile'))
     elif request.method == 'GET':
         form.username.data = current_user.username
         form.email.data = current_user.email
     return render_template('edit_profile.html', title='Edit Profile',
                            form=form)
-
-@app.route('/profile_updated', methods=['GET'])
-@login_required
-def profile_updated():
-    if request.referrer and request.referrer.endswith('/edit_profile'):
-        return render_template('profile_updated.html', title='Profile Updated')
-    elif request.referrer and request.referrer.endswith('/reset_password_request'):
-        return render_template('profile_updated.html', title='Password Updated')
-    else:
-        return redirect(url_for('index'))
 
 @app.route('/reset_password_request', methods=['GET', 'POST'])
 @login_required
@@ -241,3 +287,12 @@ def reset_password_request():
         else:
             flash('Invalid old password.')
     return render_template('reset_password_request.html', title='Reset Password', form=form)
+
+@app.route('/delete_certificate/<int:id>', methods=['POST'])
+@login_required
+def delete_certificate(id):
+    certificate = Certificate.query.get_or_404(id)
+    db.session.delete(certificate)
+    db.session.commit()
+    flash('Certificate deleted.')
+    return redirect(url_for('user', username=current_user.username))

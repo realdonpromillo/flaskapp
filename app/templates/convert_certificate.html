@@ -1,14 +1,15 @@
-{% extends "base.html" %}
+{% extends 'base.html' %}
+
 {% block content %}
-<form method="post">
+  <form method="post">
     {{ form.hidden_tag() }}
     <div class="form-group">
-      {{ form.common_name.label(class="form-control-label") }}
-      {{ form.common_name(class="form-control") }}
+      {{ form.private_key.label(class="form-control-label") }}
+      {{ form.private_key(class="form-control") }}
     </div>
     <div class="form-group">
-      {{ form.certificate.label(class="form-control-label") }}
-      {{ form.certificate(class="form-control") }}
+      {{ form.public_key.label(class="form-control-label") }}
+      {{ form.public_key(class="form-control") }}
     </div>
     <div class="form-group">
       {{ form.password.label(class="form-control-label") }}

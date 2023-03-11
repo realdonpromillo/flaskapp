@@ -19,8 +19,11 @@
             {% else %}
             <a href="{{ url_for('user', username=current_user.username) }}">Profile</a>
             <a href="{{ url_for('logout') }}">Logout</a>
-            {% endif %}
             <a href="{{ url_for('generate_csr') }}">Generate CSR</a>
+            <a href="{{ url_for('download_certificate') }}">Download Certificate</a>
+            {% endif %}
+            <a href ="{{ url_for('convert_certificate') }}">Convert Certificate</a>
+            
         </div>
         <div class="container">
             <h1>{{ title }}</h1>

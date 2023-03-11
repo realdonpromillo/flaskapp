@@ -1,11 +1,26 @@
 {% extends "base.html" %}
 
 {% block content %}
-<h1>CSR and Key</h1>
-<p>{CSR:}</p>
-<pre>{{ csr }}</pre>
-<p>Key:</p>
-<pre>{{ key }}</pre>
-<p><a href="{{ url_for('generate_csr', filename='csr.pem') }}" download>Download CSR</a></p>
-
+{% if user == current_user %}
+<p><a href="{{ url_for('edit_profile') }}">Edit your profile</a></p>
+<p><a href="{{ url_for('reset_password_request') }}">Change password</a></p>
+{% endif %}
+  <table id="data" class="table table-striped">
+    <thead>
+      <tr>
+        <th>CSR</th>
+        <th>Key</th>
+      </tr>
+    </thead>
+    <tbody>
+        <tr>
+          <td>{{ csr }}
+            <a href="{{ url_for('download_new_csr') }}">Download CSR</a>
+          </td>
+          <td>{{ key }}
+            <a href="{{ url_for('download_new_key') }}">Download Key</a>
+        </td>
+        </tr>
+    </tbody>
+  </table>
 {% endblock %}
