@@ -1,11 +1,30 @@
 {% extends "base.html" %}
 
 {% block content %}
-    <h1>User: {{ user.username }}</h1>
-    <hr>
-    {% for certificate in certificates %}
-    <p>
-    {{ certificate.timestamp }}: <b>Common Name: {{ certificate.cn }}, Organization: {{ certificate.organization }}, CSR: {{ certificate.csr }}</b>
-    </p>
-    {% endfor %}
+{% if user == current_user %}
+<p><a href="{{ url_for('edit_profile') }}">Edit your profile</a></p>
+<p><a href="{{ url_for('reset_password_request') }}">Change password</a></p>
+{% endif %}
+  <table id="data" class="table table-striped">
+    <thead>
+      <tr>
+        <th>Time</th>
+        <th>Common Name</th>
+        <th>Organization</th>
+        <th>CSR</th>
+        <th>Key</th>
+      </tr>
+    </thead>
+    <tbody>
+      {% for certificate in certificates %}
+        <tr>
+          <td>{{ certificate.timestamp }}</td>
+          <td>{{ certificate.cn }}</td>
+          <td>{{ certificate.organization }}</td>
+          <td><a href="{{ url_for('download_csr', id=certificate.id) }}">Download CSR</a></td>
+          <td><a href="{{ url_for('download_key', id=certificate.id) }}">Download Key</a></td>
+        </tr>
+      {% endfor %}
+    </tbody>
+  </table>
 {% endblock %}

@@ -1,7 +1,7 @@
 from io import BytesIO
 from flask import render_template, flash, redirect, url_for, make_response, send_file, Response
 from app import app, db
-from app.forms import LoginForm, RegistrationForm, CSRForm
+from app.forms import LoginForm, RegistrationForm, CSRForm, CertForm, EditProfileForm, ResetPasswordForm
 from flask_login import current_user, login_user
 from app.models import User, Certificate
 from flask_login import logout_user
@@ -127,17 +127,21 @@ def generate_csr():
 @app.route("/download_certificate", methods=["GET", "POST"])
 @login_required
 def download_certificate():
-    form = RegistrationForm()
-    if request.method == "POST":
+    form = CertForm()
+    if form.validate_on_submit():
         # Get form data
-        signed_request = request.files["signed_request"].read()
+        data = request.form
+        common_name = data['common_name']
+        csr = data['csr']
+        password = data['password']
+        #signed_request = request.files["signed_request"].read()
         
         # Load the signed certificate
-        cert = crypto.load_certificate(crypto.FILETYPE_PEM, signed_request)
+        cert = crypto.load_certificate(crypto.FILETYPE_PEM, csr)
         
         # Get the private key from the database
         cursor = cnx.cursor()
-        select_query = "SELECT encrypted_private_key FROM csr WHERE username = %s AND common_name = %s"
+        select_query = "SELECT key FROM Certificate WHERE username = %s AND common_name = %s"
         cursor.execute(select_query, (session["username"], cert.get_subject().CN))
         result = cursor.fetchone()
         encrypted_key = result[0]
@@ -157,11 +161,83 @@ def download_certificate():
         response.headers["Content-Type"] = "application/x-pkcs12"
         return response
         
-    return render_template("download_certificate.html")
+    return render_template("download_certificate.html", title='Generate Certificate', form=form)
+
+@app.route('/certificate/<int:id>/download')
+@login_required
+def download_csr(id):
+    cert = Certificate.query.get_or_404(id)
+    file_data = cert.csr
+    # Create an in-memory file-like object
+    file_stream = BytesIO(file_data)
+    # Set the file stream's position to the beginning
+    file_stream.seek(0)
+    # Return the file as an attachment
+    filename = cert.cn + '.csr'
+    response = make_response(file_stream.getvalue())
+    response.headers['Content-Disposition'] = 'attachment; filename={}'.format(filename)
+    response.mimetype = 'text/plain'
+    return response
+
+@app.route('/key/<int:id>/download')
+@login_required
+def download_key(id):
+    key = Certificate.query.get_or_404(id)
+    file_data = key.key
+    # Create an in-memory file-like object
+    file_stream = BytesIO(file_data)
+    # Set the file stream's position to the beginning
+    file_stream.seek(0)
+    # Return the file as an attachment
+    filename = key.cn + '.key'
+    response = make_response(file_stream.getvalue())
+    response.headers['Content-Disposition'] = 'attachment; filename={}'.format(filename)
+    response.mimetype = 'text/plain'
+    return response
 
 @app.route('/user/<username>')
 @login_required
 def user(username):
     user = User.query.filter_by(username=username).first_or_404()
     certificates = user.certificates.order_by(Certificate.timestamp.desc())
-    return render_template('user.html', user=user, certificates=certificates)
+    return render_template('user.html', title='User Table', user=user, certificates=certificates)
+
+@app.route('/edit_profile', methods=['GET', 'POST'])
+@login_required
+def edit_profile():
+    form = EditProfileForm(current_user.username, current_user.email)
+    if form.validate_on_submit():
+        current_user.username = form.username.data
+        current_user.email = form.email.data
+        db.session.commit()
+        flash('Your changes have been saved.')
+        return redirect(url_for('profile_updated'))
+    elif request.method == 'GET':
+        form.username.data = current_user.username
+        form.email.data = current_user.email
+    return render_template('edit_profile.html', title='Edit Profile',
+                           form=form)
+
+@app.route('/profile_updated', methods=['GET'])
+@login_required
+def profile_updated():
+    if request.referrer and request.referrer.endswith('/edit_profile'):
+        return render_template('profile_updated.html', title='Profile Updated')
+    elif request.referrer and request.referrer.endswith('/reset_password_request'):
+        return render_template('profile_updated.html', title='Password Updated')
+    else:
+        return redirect(url_for('index'))
+
+@app.route('/reset_password_request', methods=['GET', 'POST'])
+@login_required
+def reset_password_request():
+    form = ResetPasswordForm()
+    if form.validate_on_submit():
+        if current_user.check_password(form.old_password.data):
+            current_user.set_password(form.new_password.data)
+            db.session.commit()
+            flash('Your password has been updated.')
+            return redirect(url_for('profile_updated'))
+        else:
+            flash('Invalid old password.')
+    return render_template('reset_password_request.html', title='Reset Password', form=form)
