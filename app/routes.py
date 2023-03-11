@@ -119,7 +119,7 @@ def download_certificate():
     if form.validate_on_submit():
         try:
             # Load the existing key from the database
-            existing_key = Certificate.query.filter_by(common_name=form.common_name.data).first()
+            existing_key = Certificate.query.filter_by(cn=form.common_name.data).first()
             private_key = existing_key.key
             if not existing_key:
                 flash('The Private Key for the Common Name in the CSR does not exist in the database')
