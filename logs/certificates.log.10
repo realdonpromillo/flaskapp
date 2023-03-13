@@ -1,0 +1,118 @@
+2023-03-13 14:04:20,683 ERROR: Exception on /index [GET] [in C:\Users\Nick\Documents\Praxisarbeit\praxisarbeit\lib\site-packages\flask\app.py:1741]
+Traceback (most recent call last):
+  File "C:\Users\Nick\Documents\Praxisarbeit\praxisarbeit\lib\site-packages\flask\app.py", line 2525, in wsgi_app
+    response = self.full_dispatch_request()
+  File "C:\Users\Nick\Documents\Praxisarbeit\praxisarbeit\lib\site-packages\flask\app.py", line 1822, in full_dispatch_request
+    rv = self.handle_user_exception(e)
+  File "C:\Users\Nick\Documents\Praxisarbeit\praxisarbeit\lib\site-packages\flask\app.py", line 1820, in full_dispatch_request
+    rv = self.dispatch_request()
+  File "C:\Users\Nick\Documents\Praxisarbeit\praxisarbeit\lib\site-packages\flask\app.py", line 1796, in dispatch_request
+    return self.ensure_sync(self.view_functions[rule.endpoint])(**view_args)
+  File "C:\Users\Nick\Documents\Praxisarbeit\praxisarbeit\lib\site-packages\flask_login\utils.py", line 290, in decorated_view
+    return current_app.ensure_sync(func)(*args, **kwargs)
+  File "C:\Users\Nick\Documents\Praxisarbeit\app\main\routes.py", line 20, in index
+    return render_template("index.html", title='Home Page')
+  File "C:\Users\Nick\Documents\Praxisarbeit\praxisarbeit\lib\site-packages\flask\templating.py", line 147, in render_template
+    return _render(app, template, context)
+  File "C:\Users\Nick\Documents\Praxisarbeit\praxisarbeit\lib\site-packages\flask\templating.py", line 130, in _render
+    rv = template.render(context)
+  File "C:\Users\Nick\Documents\Praxisarbeit\praxisarbeit\lib\site-packages\jinja2\environment.py", line 1301, in render
+    self.environment.handle_exception()
+  File "C:\Users\Nick\Documents\Praxisarbeit\praxisarbeit\lib\site-packages\jinja2\environment.py", line 936, in handle_exception
+    raise rewrite_traceback_stack(source=source)
+  File "C:\Users\Nick\Documents\Praxisarbeit\app\templates\index.html", line 2, in top-level template code
+    {% import 'bootstrap/wtf.html' as wtf %}
+  File "C:\Users\Nick\Documents\Praxisarbeit\app\templates\base.html", line 1, in top-level template code
+    {% extends 'bootstrap/base.html' %}
+  File "C:\Users\Nick\Documents\Praxisarbeit\praxisarbeit\lib\site-packages\flask_bootstrap\templates\bootstrap\base.html", line 1, in top-level template code
+    {% block doc -%}
+  File "C:\Users\Nick\Documents\Praxisarbeit\praxisarbeit\lib\site-packages\flask_bootstrap\templates\bootstrap\base.html", line 4, in block 'doc'
+    {%- block html %}
+  File "C:\Users\Nick\Documents\Praxisarbeit\praxisarbeit\lib\site-packages\flask_bootstrap\templates\bootstrap\base.html", line 20, in block 'html'
+    {% block body -%}
+  File "C:\Users\Nick\Documents\Praxisarbeit\praxisarbeit\lib\site-packages\flask_bootstrap\templates\bootstrap\base.html", line 21, in block 'body'
+    {% block navbar %}
+  File "C:\Users\Nick\Documents\Praxisarbeit\app\templates\base.html", line 17, in block 'navbar'
+    <a class="navbar-brand" href="{{ url_for('index') }}">Certificates</a>
+  File "C:\Users\Nick\Documents\Praxisarbeit\praxisarbeit\lib\site-packages\flask\app.py", line 2031, in url_for
+    return self.handle_url_build_error(error, endpoint, values)
+  File "C:\Users\Nick\Documents\Praxisarbeit\praxisarbeit\lib\site-packages\flask\app.py", line 2020, in url_for
+    rv = url_adapter.build(  # type: ignore[union-attr]
+  File "C:\Users\Nick\Documents\Praxisarbeit\praxisarbeit\lib\site-packages\werkzeug\routing\map.py", line 917, in build
+    raise BuildError(endpoint, values, method, self)
+werkzeug.routing.exceptions.BuildError: Could not build url for endpoint 'index'. Did you mean 'main.index' instead?
+2023-03-13 14:04:35,011 ERROR: Exception on /user/test [GET] [in C:\Users\Nick\Documents\Praxisarbeit\praxisarbeit\lib\site-packages\flask\app.py:1741]
+Traceback (most recent call last):
+  File "C:\Users\Nick\Documents\Praxisarbeit\praxisarbeit\lib\site-packages\flask\app.py", line 2525, in wsgi_app
+    response = self.full_dispatch_request()
+  File "C:\Users\Nick\Documents\Praxisarbeit\praxisarbeit\lib\site-packages\flask\app.py", line 1822, in full_dispatch_request
+    rv = self.handle_user_exception(e)
+  File "C:\Users\Nick\Documents\Praxisarbeit\praxisarbeit\lib\site-packages\flask\app.py", line 1820, in full_dispatch_request
+    rv = self.dispatch_request()
+  File "C:\Users\Nick\Documents\Praxisarbeit\praxisarbeit\lib\site-packages\flask\app.py", line 1796, in dispatch_request
+    return self.ensure_sync(self.view_functions[rule.endpoint])(**view_args)
+  File "C:\Users\Nick\Documents\Praxisarbeit\praxisarbeit\lib\site-packages\flask_login\utils.py", line 290, in decorated_view
+    return current_app.ensure_sync(func)(*args, **kwargs)
+  File "C:\Users\Nick\Documents\Praxisarbeit\app\main\routes.py", line 221, in user
+    page=page, per_page=app.config['CERTIFICATES_PER_PAGE'], error_out=False)
+NameError: name 'app' is not defined
+2023-03-13 14:09:51,033 INFO: Certificates startup [in C:\Users\Nick\Documents\Praxisarbeit\app\__init__.py:48]
+2023-03-13 14:09:54,641 ERROR: Exception on /user/test [GET] [in C:\Users\Nick\Documents\Praxisarbeit\praxisarbeit\lib\site-packages\flask\app.py:1741]
+Traceback (most recent call last):
+  File "C:\Users\Nick\Documents\Praxisarbeit\praxisarbeit\lib\site-packages\flask\app.py", line 2525, in wsgi_app
+    response = self.full_dispatch_request()
+  File "C:\Users\Nick\Documents\Praxisarbeit\praxisarbeit\lib\site-packages\flask\app.py", line 1822, in full_dispatch_request
+    rv = self.handle_user_exception(e)
+  File "C:\Users\Nick\Documents\Praxisarbeit\praxisarbeit\lib\site-packages\flask\app.py", line 1820, in full_dispatch_request
+    rv = self.dispatch_request()
+  File "C:\Users\Nick\Documents\Praxisarbeit\praxisarbeit\lib\site-packages\flask\app.py", line 1796, in dispatch_request
+    return self.ensure_sync(self.view_functions[rule.endpoint])(**view_args)
+  File "C:\Users\Nick\Documents\Praxisarbeit\praxisarbeit\lib\site-packages\flask_login\utils.py", line 290, in decorated_view
+    return current_app.ensure_sync(func)(*args, **kwargs)
+  File "C:\Users\Nick\Documents\Praxisarbeit\app\main\routes.py", line 221, in user
+    page=page, per_page=certificates.config['CERTIFICATES_PER_PAGE'], error_out=False)
+UnboundLocalError: local variable 'certificates' referenced before assignment
+2023-03-13 14:09:57,259 ERROR: Exception on / [GET] [in C:\Users\Nick\Documents\Praxisarbeit\praxisarbeit\lib\site-packages\flask\app.py:1741]
+Traceback (most recent call last):
+  File "C:\Users\Nick\Documents\Praxisarbeit\praxisarbeit\lib\site-packages\flask\app.py", line 2525, in wsgi_app
+    response = self.full_dispatch_request()
+  File "C:\Users\Nick\Documents\Praxisarbeit\praxisarbeit\lib\site-packages\flask\app.py", line 1822, in full_dispatch_request
+    rv = self.handle_user_exception(e)
+  File "C:\Users\Nick\Documents\Praxisarbeit\praxisarbeit\lib\site-packages\flask\app.py", line 1820, in full_dispatch_request
+    rv = self.dispatch_request()
+  File "C:\Users\Nick\Documents\Praxisarbeit\praxisarbeit\lib\site-packages\flask\app.py", line 1796, in dispatch_request
+    return self.ensure_sync(self.view_functions[rule.endpoint])(**view_args)
+  File "C:\Users\Nick\Documents\Praxisarbeit\praxisarbeit\lib\site-packages\flask_login\utils.py", line 290, in decorated_view
+    return current_app.ensure_sync(func)(*args, **kwargs)
+  File "C:\Users\Nick\Documents\Praxisarbeit\app\main\routes.py", line 20, in index
+    return render_template("index.html", title='Home Page')
+  File "C:\Users\Nick\Documents\Praxisarbeit\praxisarbeit\lib\site-packages\flask\templating.py", line 147, in render_template
+    return _render(app, template, context)
+  File "C:\Users\Nick\Documents\Praxisarbeit\praxisarbeit\lib\site-packages\flask\templating.py", line 130, in _render
+    rv = template.render(context)
+  File "C:\Users\Nick\Documents\Praxisarbeit\praxisarbeit\lib\site-packages\jinja2\environment.py", line 1301, in render
+    self.environment.handle_exception()
+  File "C:\Users\Nick\Documents\Praxisarbeit\praxisarbeit\lib\site-packages\jinja2\environment.py", line 936, in handle_exception
+    raise rewrite_traceback_stack(source=source)
+  File "C:\Users\Nick\Documents\Praxisarbeit\app\templates\index.html", line 2, in top-level template code
+    {% import 'bootstrap/wtf.html' as wtf %}
+  File "C:\Users\Nick\Documents\Praxisarbeit\app\templates\base.html", line 1, in top-level template code
+    {% extends 'bootstrap/base.html' %}
+  File "C:\Users\Nick\Documents\Praxisarbeit\praxisarbeit\lib\site-packages\flask_bootstrap\templates\bootstrap\base.html", line 1, in top-level template code
+    {% block doc -%}
+  File "C:\Users\Nick\Documents\Praxisarbeit\praxisarbeit\lib\site-packages\flask_bootstrap\templates\bootstrap\base.html", line 4, in block 'doc'
+    {%- block html %}
+  File "C:\Users\Nick\Documents\Praxisarbeit\praxisarbeit\lib\site-packages\flask_bootstrap\templates\bootstrap\base.html", line 20, in block 'html'
+    {% block body -%}
+  File "C:\Users\Nick\Documents\Praxisarbeit\praxisarbeit\lib\site-packages\flask_bootstrap\templates\bootstrap\base.html", line 21, in block 'body'
+    {% block navbar %}
+  File "C:\Users\Nick\Documents\Praxisarbeit\app\templates\base.html", line 17, in block 'navbar'
+    <a class="navbar-brand" href="{{ url_for('index') }}">Certificates</a>
+  File "C:\Users\Nick\Documents\Praxisarbeit\praxisarbeit\lib\site-packages\flask\app.py", line 2031, in url_for
+    return self.handle_url_build_error(error, endpoint, values)
+  File "C:\Users\Nick\Documents\Praxisarbeit\praxisarbeit\lib\site-packages\flask\app.py", line 2020, in url_for
+    rv = url_adapter.build(  # type: ignore[union-attr]
+  File "C:\Users\Nick\Documents\Praxisarbeit\praxisarbeit\lib\site-packages\werkzeug\routing\map.py", line 917, in build
+    raise BuildError(endpoint, values, method, self)
+werkzeug.routing.exceptions.BuildError: Could not build url for endpoint 'index'. Did you mean 'main.index' instead?
+2023-03-13 14:11:41,615 INFO: Certificates startup [in C:\Users\Nick\Documents\Praxisarbeit\app\__init__.py:48]

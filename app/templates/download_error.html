@@ -11,6 +11,6 @@
       </ul>
     {% endif %}
   {% endwith %}
-  <p><a href="{{ url_for('user', username=current_user.username) }}">Return to your Profile Page</a></p>
+  <p><a href="{{ url_for('main.user', username=current_user.username) }}">Return to your Profile Page</a></p>
 </div>
 {% endblock %}

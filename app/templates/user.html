@@ -1,48 +1,64 @@
 {% extends "base.html" %}
 
-{% block content %}
-
-{% if user == current_user %}
-<p><a href="{{ url_for('edit_profile') }}">Edit your profile</a></p>
-<p><a href="{{ url_for('reset_password_request') }}">Change password</a></p>
-{% endif %}
-
-{% with messages = get_flashed_messages() %}
-{% if messages %}
-  <ul class="flashes">
-  {% for message in messages %}
-    <li>{{ message }}</li>
-  {% endfor %}
-  </ul>
-{% endif %}
-{% endwith %}
-  <table id="data" class="table table-striped">
-    <thead>
-      <tr>
-        <th>Time</th>
-        <th>Common Name</th>
-        <th>Organization</th>
-        <th>CSR</th>
-        <th>Key</th>
-        <th>Delete</th>
-      </tr>
-    </thead>
-    <tbody>
-      {% for certificate in certificates %}
+{% block app_content %}
+    <table class="table table-hover">
         <tr>
-          <td>{{ certificate.timestamp }}</td>
-          <td>{{ certificate.cn }}</td>
-          <td>{{ certificate.organization }}</td>
-          <td><a href="{{ url_for('download_csr', id=certificate.id) }}">Download CSR</a></td>
-          <td><a href="{{ url_for('download_key', id=certificate.id) }}">Download Key</a></td>
-          <td>
-            <form method="post" action="{{ url_for('delete_certificate', id=certificate.id) }}" onsubmit="return confirm('Are you sure you want to delete this certificate?');">
-              <input type="hidden" name="id" value="{{ certificate.id }}">
-              <button type="submit" class="btn btn-sm btn-outline-danger">Delete</button>
-            </form>
-          </td>
+            <td>
+                <h1>User: {{ user.username }}</h1>
+                <p><a href="{{ url_for('main.edit_profile') }}">Edit your profile</a></p>
+                <p><a href="{{ url_for('auth.reset_password_request') }}">Change password</a></p>
+            </td>
         </tr>
-      {% endfor %}
-    </tbody>
-  </table>
+    </table>
+    <table id="data" class="table table-striped">
+      <thead>
+        <tr>
+          <th>Time</th>
+          <th>Common Name</th>
+          <th>Organization</th>
+          <th>CSR</th>
+          <th>Key</th>
+          <th>PFX</th>
+          <th>Delete</th>
+        </tr>
+      </thead>
+      <tbody>
+      </tbody>
+      <tbody>
+        {% for certificate in certificates %}
+          <tr>
+            <td>{{ certificate.timestamp }}</td>
+            <td>{{ certificate.cn }}</td>
+            <td>{{ certificate.organization }}</td>
+            <td><a href="{{ url_for('main.download_csr', cn=certificate.cn) }}">Download CSR</a></td>
+            <td><a href="{{ url_for('main.download_key', cn=certificate.cn) }}">Download Key</a></td>
+            {% if certificate.pfx %}
+              <td><a href="{{ url_for('main.download_pfx', cn=certificate.cn) }}">Download PFX</a></td>
+            {% else %}
+              <td>No PFX yet</td>
+            {% endif %}
+            <td>
+              <form method="post" action="{{ url_for('main.delete_certificate', id=certificate.id) }}" onsubmit="return confirm('Are you sure you want to delete this certificate?');">
+                <input type="hidden" name="id" value="{{ certificate.id }}">
+                <button type="submit" class="btn btn-sm btn-outline-danger">Delete</button>
+              </form>
+            </td>
+          </tr>
+        {% endfor %}
+      </tbody>
+    </table>  
+    <nav aria-label="...">
+        <ul class="pager">
+            <li class="previous{% if not prev_url %} disabled{% endif %}">
+                <a href="{{ prev_url or '#' }}">
+                    <span aria-hidden="true">&larr;</span> Newer Certificates
+                </a>
+            </li>
+            <li class="next{% if not next_url %} disabled{% endif %}">
+                <a href="{{ next_url or '#' }}">
+                    Older Certificates <span aria-hidden="true">&rarr;</span>
+                </a>
+            </li>
+        </ul>
+    </nav>
 {% endblock %}

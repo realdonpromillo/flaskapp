@@ -1,10 +1,6 @@
 {% extends "base.html" %}
 
-{% block content %}
-{% if user == current_user %}
-<p><a href="{{ url_for('edit_profile') }}">Edit your profile</a></p>
-<p><a href="{{ url_for('reset_password_request') }}">Change password</a></p>
-{% endif %}
+{% block app_content %}
   <table id="data" class="table table-striped">
     <thead>
       <tr>
@@ -13,14 +9,28 @@
       </tr>
     </thead>
     <tbody>
-        <tr>
-          <td>{{ csr }}
-            <a href="{{ url_for('download_new_csr') }}">Download CSR</a>
-          </td>
-          <td>{{ key }}
-            <a href="{{ url_for('download_new_key') }}">Download Key</a>
+      <tr>
+        <td>{{ csr.decode().replace('b\'', '').replace('\\n', '\n') }}</td>
+        <td>{{ key.decode().replace('b\'', '').replace('\\n', '\n') }}</td>
+      </tr>
+      <tr>
+        <td>
+          <div class="mt-3">
+            <a href="{{ url_for('main.download_csr', cn=cn) }}" class="btn btn-primary">Download CSR</a>
+          </div>
         </td>
-        </tr>
-    </tbody>
+        <td>
+          <div class="mt-3">
+            <a href="{{ url_for('main.download_key', cn=cn) }}" class="btn btn-primary">Download Key</a>
+          </div>
+        </td>
+      </tr>
+      <tr>
+        <td colspan="2">
+          <hr>
+          <p><strong>Note:</strong> The key should be kept secret and stored in a secure location.</p>
+        </td>
+      </tr>
+  </tbody>
   </table>
 {% endblock %}

@@ -1,57 +1,11 @@
 {% extends "base.html" %}
+{% import 'bootstrap/wtf.html' as wtf %}
 
-{% block content %}
-    <form action="" method="post">
-        {{ form.hidden_tag() }}
-        <p>
-          {{ form.country.label }}<br>
-          {{ form.country(size=32) }}<br>
-          {% for error in form.country.errors %}
-          <span style="color: red;">[{{ error }}]</span>
-          {% endfor %}
-      </p>
-      <p>
-        {{ form.state.label }}<br>
-        {{ form.state(size=32) }}<br>
-        {% for error in form.state.errors %}
-        <span style="color: red;">[{{ error }}]</span>
-        {% endfor %}
-    </p>
-    <p>
-      {{ form.locality.label }}<br>
-      {{ form.locality(size=32) }}<br>
-      {% for error in form.locality.errors %}
-      <span style="color: red;">[{{ error }}]</span>
-      {% endfor %}
-  </p>
-  <p>
-    {{ form.organization.label }}<br>
-    {{ form.organization(size=32) }}<br>
-    {% for error in form.organization.errors %}
-    <span style="color: red;">[{{ error }}]</span>
-    {% endfor %}
-  </p>
-  <p>
-    {{ form.organizational_unit.label }}<br>
-    {{ form.organizational_unit(size=32) }}<br>
-    {% for error in form.organizational_unit.errors %}
-    <span style="color: red;">[{{ error }}]</span>
-  {% endfor %}
-  </p>
-  <p>
-    {{ form.common_name.label }}<br>
-    {{ form.common_name(size=32) }}<br>
-    {% for error in form.common_name.errors %}
-    <span style="color: red;">[{{ error }}]</span>
-    {% endfor %}
-  </p>
-  <p>
-    {{ form.subject_alternative_name.label }}<br>
-    {{ form.subject_alternative_name(size=32) }}<br>
-    {% for error in form.subject_alternative_name.errors %}
-    <span style="color: red;">[{{ error }}]</span>
-    {% endfor %}
-  </p>
-  <p>{{ form.submit() }}</p>
-</form>
+{% block app_content %}
+    <h1>Generate your CSR</h1>
+    <div class="row">
+        <div class="col-md-4">
+            {{ wtf.quick_form(form) }}
+        </div>
+    </div>
 {% endblock %}
