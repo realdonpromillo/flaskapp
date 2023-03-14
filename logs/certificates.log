@@ -13,3 +13,4 @@ Traceback (most recent call last):
   File "C:\Users\Nick\Documents\Praxisarbeit\app\api\certificates.py", line 27, in get_certificate_csr
     certificate = Certificate.query.filter_by(cn=cn, user_id=current_user.id).first_or_404()
 AttributeError: 'AnonymousUserMixin' object has no attribute 'id'
+2023-03-14 10:17:31,360 INFO: Certificates startup [in C:\Users\Nick\Documents\Praxisarbeit\app\__init__.py:51]
