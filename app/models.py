@@ -3,7 +3,11 @@ from app import db
 from werkzeug.security import generate_password_hash, check_password_hash
 from flask_login import UserMixin
 from app import login
-from flask import current_app, url_for
+from flask import current_app, url_for, g
+import base64
+from datetime import datetime, timedelta
+import os
+
 
 class PaginatedAPIMixin(object):
     @staticmethod
@@ -34,6 +38,8 @@ class User(UserMixin, PaginatedAPIMixin, db.Model):
     username = db.Column(db.String(64), index=True, unique=True)
     email = db.Column(db.String(120), index=True, unique=True)
     password_hash = db.Column(db.String(128))
+    token = db.Column(db.String(32), index=True, unique=True)
+    token_expiration = db.Column(db.DateTime)
     certificates = db.relationship('Certificate', backref='author', lazy='dynamic')
 
     def __repr__(self):
@@ -64,11 +70,30 @@ class User(UserMixin, PaginatedAPIMixin, db.Model):
         if new_user and 'password' in data:
             self.set_password(data['password'])
 
+    def get_token(self, expires_in=3600):
+        now = datetime.utcnow()
+        if self.token and self.token_expiration > now + timedelta(seconds=60):
+            return self.token
+        self.token = base64.b64encode(os.urandom(24)).decode('utf-8')
+        self.token_expiration = now + timedelta(seconds=expires_in)
+        db.session.add(self)
+        return self.token
+
+    def revoke_token(self):
+        self.token_expiration = datetime.utcnow() - timedelta(seconds=1)
+
+    @staticmethod
+    def check_token(token):
+        user = User.query.filter_by(token=token).first()
+        if user is None or user.token_expiration < datetime.utcnow():
+            return None
+        return user
+
 @login.user_loader
 def load_user(id):
     return User.query.get(int(id))
 
-class Certificate(db.Model):
+class Certificate(PaginatedAPIMixin, db.Model):
     id = db.Column(db.Integer, primary_key=True)
     user_id = db.Column(db.Integer, db.ForeignKey('user.id'))
     timestamp = db.Column(db.DateTime, index=True, default=datetime.utcnow)
@@ -79,17 +104,20 @@ class Certificate(db.Model):
     pfx = db.Column(db.LargeBinary)
 
     def to_dict(self):
-        data = {
-            'id': self.id,
-            'csr': self.csr,
-            'key': self.key,
-            'cn': self.cn,
-            'pfx': self.pfx,
-            '_links': {
-                'csr': url_for('api.get_csr', cn=self.cn),
-                'key': url_for('api.get_key', cn=self.cn),
-                'pfx': url_for('api.get_pfx', cn=self.cn),
-            }
+        data = {}
+        if g.current_user.id == self.user_id:
+            data = {
+                'id': self.id,
+                'user_id': self.user_id,
+                'csr': self.csr,
+                'key': self.key,
+                'cn': self.cn,
+                'pfx': self.pfx,
+                '_links': {
+                    'csr': url_for('api.get_csr', cn=self.cn),
+                    'key': url_for('api.get_key', cn=self.cn),
+                    'pfx': url_for('api.get_pfx', cn=self.cn),
+                }
             }
         return data
 

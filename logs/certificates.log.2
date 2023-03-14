@@ -1,19 +1,4 @@
-2023-03-13 14:20:06,196 ERROR: Exception on /user/test [GET] [in C:\Users\Nick\Documents\Praxisarbeit\praxisarbeit\lib\site-packages\flask\app.py:1741]
-Traceback (most recent call last):
-  File "C:\Users\Nick\Documents\Praxisarbeit\praxisarbeit\lib\site-packages\flask\app.py", line 2525, in wsgi_app
-    response = self.full_dispatch_request()
-  File "C:\Users\Nick\Documents\Praxisarbeit\praxisarbeit\lib\site-packages\flask\app.py", line 1822, in full_dispatch_request
-    rv = self.handle_user_exception(e)
-  File "C:\Users\Nick\Documents\Praxisarbeit\praxisarbeit\lib\site-packages\flask\app.py", line 1820, in full_dispatch_request
-    rv = self.dispatch_request()
-  File "C:\Users\Nick\Documents\Praxisarbeit\praxisarbeit\lib\site-packages\flask\app.py", line 1796, in dispatch_request
-    return self.ensure_sync(self.view_functions[rule.endpoint])(**view_args)
-  File "C:\Users\Nick\Documents\Praxisarbeit\praxisarbeit\lib\site-packages\flask_login\utils.py", line 290, in decorated_view
-    return current_app.ensure_sync(func)(*args, **kwargs)
-  File "C:\Users\Nick\Documents\Praxisarbeit\app\main\routes.py", line 221, in user
-    page=page, per_page=certificates.config['CERTIFICATES_PER_PAGE'], error_out=False)
-UnboundLocalError: local variable 'certificates' referenced before assignment
-2023-03-13 14:20:11,640 ERROR: Exception on /favicon.ico [GET] [in C:\Users\Nick\Documents\Praxisarbeit\praxisarbeit\lib\site-packages\flask\app.py:1741]
+2023-03-13 14:24:01,336 ERROR: Exception on /favicon.ico [GET] [in C:\Users\Nick\Documents\Praxisarbeit\praxisarbeit\lib\site-packages\flask\app.py:1741]
 Traceback (most recent call last):
   File "C:\Users\Nick\Documents\Praxisarbeit\praxisarbeit\lib\site-packages\flask\app.py", line 1820, in full_dispatch_request
     rv = self.dispatch_request()
@@ -71,7 +56,7 @@ Traceback (most recent call last):
   File "C:\Users\Nick\Documents\Praxisarbeit\praxisarbeit\lib\site-packages\werkzeug\routing\map.py", line 917, in build
     raise BuildError(endpoint, values, method, self)
 werkzeug.routing.exceptions.BuildError: Could not build url for endpoint 'index'. Did you mean 'main.index' instead?
-2023-03-13 14:20:12,436 ERROR: Exception on /user/test [GET] [in C:\Users\Nick\Documents\Praxisarbeit\praxisarbeit\lib\site-packages\flask\app.py:1741]
+2023-03-13 14:24:07,284 ERROR: Exception on /user/test [GET] [in C:\Users\Nick\Documents\Praxisarbeit\praxisarbeit\lib\site-packages\flask\app.py:1741]
 Traceback (most recent call last):
   File "C:\Users\Nick\Documents\Praxisarbeit\praxisarbeit\lib\site-packages\flask\app.py", line 2525, in wsgi_app
     response = self.full_dispatch_request()
@@ -86,7 +71,8 @@ Traceback (most recent call last):
   File "C:\Users\Nick\Documents\Praxisarbeit\app\main\routes.py", line 221, in user
     page=page, per_page=certificates.config['CERTIFICATES_PER_PAGE'], error_out=False)
 UnboundLocalError: local variable 'certificates' referenced before assignment
-2023-03-13 14:20:23,391 ERROR: Exception on /user/test [GET] [in C:\Users\Nick\Documents\Praxisarbeit\praxisarbeit\lib\site-packages\flask\app.py:1741]
+2023-03-13 14:24:49,634 INFO: Certificates startup [in C:\Users\Nick\Documents\Praxisarbeit\app\__init__.py:48]
+2023-03-13 14:24:55,771 ERROR: Exception on /user/test [GET] [in C:\Users\Nick\Documents\Praxisarbeit\praxisarbeit\lib\site-packages\flask\app.py:1741]
 Traceback (most recent call last):
   File "C:\Users\Nick\Documents\Praxisarbeit\praxisarbeit\lib\site-packages\flask\app.py", line 2525, in wsgi_app
     response = self.full_dispatch_request()
@@ -101,4 +87,33 @@ Traceback (most recent call last):
   File "C:\Users\Nick\Documents\Praxisarbeit\app\main\routes.py", line 221, in user
     page=page, per_page=certificates.config['CERTIFICATES_PER_PAGE'], error_out=False)
 UnboundLocalError: local variable 'certificates' referenced before assignment
-2023-03-13 14:23:55,713 INFO: Certificates startup [in C:\Users\Nick\Documents\Praxisarbeit\app\__init__.py:48]
+2023-03-13 14:25:01,708 ERROR: Exception on /user/test [GET] [in C:\Users\Nick\Documents\Praxisarbeit\praxisarbeit\lib\site-packages\flask\app.py:1741]
+Traceback (most recent call last):
+  File "C:\Users\Nick\Documents\Praxisarbeit\praxisarbeit\lib\site-packages\flask\app.py", line 2525, in wsgi_app
+    response = self.full_dispatch_request()
+  File "C:\Users\Nick\Documents\Praxisarbeit\praxisarbeit\lib\site-packages\flask\app.py", line 1822, in full_dispatch_request
+    rv = self.handle_user_exception(e)
+  File "C:\Users\Nick\Documents\Praxisarbeit\praxisarbeit\lib\site-packages\flask\app.py", line 1820, in full_dispatch_request
+    rv = self.dispatch_request()
+  File "C:\Users\Nick\Documents\Praxisarbeit\praxisarbeit\lib\site-packages\flask\app.py", line 1796, in dispatch_request
+    return self.ensure_sync(self.view_functions[rule.endpoint])(**view_args)
+  File "C:\Users\Nick\Documents\Praxisarbeit\praxisarbeit\lib\site-packages\flask_login\utils.py", line 290, in decorated_view
+    return current_app.ensure_sync(func)(*args, **kwargs)
+  File "C:\Users\Nick\Documents\Praxisarbeit\app\main\routes.py", line 221, in user
+    page=page, per_page=certificates.config['CERTIFICATES_PER_PAGE'], error_out=False)
+UnboundLocalError: local variable 'certificates' referenced before assignment
+2023-03-13 14:25:19,709 ERROR: Exception on /user/test [GET] [in C:\Users\Nick\Documents\Praxisarbeit\praxisarbeit\lib\site-packages\flask\app.py:1741]
+Traceback (most recent call last):
+  File "C:\Users\Nick\Documents\Praxisarbeit\praxisarbeit\lib\site-packages\flask\app.py", line 2525, in wsgi_app
+    response = self.full_dispatch_request()
+  File "C:\Users\Nick\Documents\Praxisarbeit\praxisarbeit\lib\site-packages\flask\app.py", line 1822, in full_dispatch_request
+    rv = self.handle_user_exception(e)
+  File "C:\Users\Nick\Documents\Praxisarbeit\praxisarbeit\lib\site-packages\flask\app.py", line 1820, in full_dispatch_request
+    rv = self.dispatch_request()
+  File "C:\Users\Nick\Documents\Praxisarbeit\praxisarbeit\lib\site-packages\flask\app.py", line 1796, in dispatch_request
+    return self.ensure_sync(self.view_functions[rule.endpoint])(**view_args)
+  File "C:\Users\Nick\Documents\Praxisarbeit\praxisarbeit\lib\site-packages\flask_login\utils.py", line 290, in decorated_view
+    return current_app.ensure_sync(func)(*args, **kwargs)
+  File "C:\Users\Nick\Documents\Praxisarbeit\app\main\routes.py", line 221, in user
+    page=page, per_page=certificates.config['CERTIFICATES_PER_PAGE'], error_out=False)
+UnboundLocalError: local variable 'certificates' referenced before assignment
