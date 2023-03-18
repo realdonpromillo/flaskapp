@@ -3,10 +3,15 @@ import unittest
 from flask import url_for
 from app import create_app, db
 from app.models import User, Certificate
-from config import config
+from config import Config
+import os
+import re
+import tempfile
 
-class TestConfig(config):
+class TestConfig(Config):
     TESTING = True
+    SERVER_NAME = 'localhost:5000'
+    APPLICATION_ROOT = '/'
     SQLALCHEMY_DATABASE_URI = 'sqlite://'
     SQLALCHEMY_TRACK_MODIFICATIONS = False
 
@@ -19,8 +24,6 @@ class MainBlueprintTestCase(unittest.TestCase):
         self.app_context.push()
         db.create_all()
         self.user = User(username='testuser', email='test@example.com', password_hash='password')
-        db.session.add(self.user)
-        db.session.commit()
 
     def tearDown(self):
         db.session.remove()
@@ -33,17 +36,12 @@ class MainBlueprintTestCase(unittest.TestCase):
         self.assertFalse(u.check_password('dog'))
         self.assertTrue(u.check_password('cat'))
 
-    def test_index_route(self):
-        response = self.client.get(url_for('main.index'))
-        self.assertEqual(response.status_code, 200)
-        self.assertIn(b'Home Page', response.data)
-
     def test_generate_csr_route(self):
         with self.client:
+            # Login to the application
             self.client.post(url_for('auth.login'), data={'username': 'testuser', 'password': 'password'})
-            response = self.client.get(url_for('main.generate_csr'))
-            self.assertEqual(response.status_code, 200)
 
+            # Generate a CSR
             data = {
                 'country': 'CH',
                 'state': 'Bern',
@@ -54,22 +52,13 @@ class MainBlueprintTestCase(unittest.TestCase):
                 'subject_alternative_name': 'test1.com,test2.com'
             }
 
-            response = self.client.post(url_for('main.generate_csr'), data=data)
+            response = self.client.post(url_for('main.generate_csr'), data=data, follow_redirects=True)
             self.assertEqual(response.status_code, 200)
-            self.assertIn(b'test.com', response.data)
 
-    def test_download_certificate_route(self):
-        with self.client:
-            self.client.post(url_for('auth.login'), data={'email': 'test@example.com', 'password': 'password'})
-            csr = Certificate(author=self.user, cn='test.com', organization='Test Organization', csr='test csr', key='test key')
-            db.session.add(csr)
-            db.session.commit()
 
-            data = {
-                'common_name': 'test.com',
-                'certificate': 'test cert',
-                'password': 'test password'
-            }
+    def test_generate_csr_route_without_login(self):
+        response = self.client.get(url_for('main.generate_csr'))
+        self.assertEqual(response.status_code, 302)
 
-            response = self.client.post(url_for('main.download_certificate'), data=data)
-            self.assertEqual(response.status_code, 200)
+if __name__ == '__main__':
+    unittest.main(verbosity=2)

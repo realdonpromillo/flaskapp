@@ -1,22 +1,20 @@
 from datetime import datetime
-from io import BytesIO
 from flask import render_template, flash, redirect, url_for, make_response, send_file, Response, abort, request, jsonify, current_app
+from flask_login import current_user, login_required
 from app import db
 from app.main.forms import CSRForm, CertForm, EditProfileForm, ConvertCertificateForm
-from flask_login import current_user, login_required
 from app.models import User, Certificate
 from OpenSSL import crypto
 from app.main import bp
 from OpenSSL import SSL
 import base64
+from io import BytesIO
 
 #Übernommen aus den Beispielen von Miguel Grinberg
 @bp.route('/')
 @bp.route('/index')
 @login_required
 def index():
-    user = {'username': 'test'}
-
     return render_template("index.html", title='Home Page')
 
 # Eigenentwicklung
