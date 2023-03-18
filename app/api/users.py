@@ -1,4 +1,5 @@
-from flask import jsonify, request, url_for, abort
+from flask import jsonify, request, url_for, abort, g
+from flask_login import current_user
 from app import db
 from app.models import User
 from app.api import bp
@@ -36,7 +37,10 @@ def create_user():
     return response
 
 @bp.route('/users/<int:id>', methods=['PUT'])
+@token_auth.login_required
 def update_user(id):
+    if g.user.id != id:
+        abort(403, "You're only allowed to edit your own user")
     user = User.query.get_or_404(id)
     data = request.get_json() or {}
     if 'username' in data and data['username'] != user.username and \
@@ -47,4 +51,5 @@ def update_user(id):
         return bad_request('please use a different email address')
     user.from_dict(data, new_user=False)
     db.session.commit()
+    
     return jsonify(user.to_dict())

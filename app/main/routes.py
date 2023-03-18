@@ -10,7 +10,7 @@ from app.main import bp
 from OpenSSL import SSL
 import base64
 
-
+#Übernommen aus den Beispielen von Miguel Grinberg
 @bp.route('/')
 @bp.route('/index')
 @login_required
@@ -19,6 +19,7 @@ def index():
 
     return render_template("index.html", title='Home Page')
 
+# Eigenentwicklung
 @bp.route("/generate_csr", methods=["GET", "POST"])
 @login_required
 def generate_csr():
@@ -82,6 +83,7 @@ def generate_csr():
 
     return render_template("generate_csr.html", title='Generate CSR', form=form)
 
+# Eigenentwicklung
 @bp.route("/download_certificate", methods=["GET", "POST"])
 @login_required
 def download_certificate():
@@ -95,7 +97,6 @@ def download_certificate():
                 flash('The Private Key for the Common Name in the CSR does not exist in the database')
                 return render_template('download_error.html', title='Error')
 
-            # decode the private and public keys from base64 and add padding if needed
             certificate = (form.certificate.data)
             passphrase = (form.password.data)
             
@@ -128,6 +129,7 @@ def download_certificate():
                
     return render_template('download_certificate.html', title='Download Certificate', form=form)
 
+# Eigenentwicklung
 @bp.route('/convert_certificate', methods=['GET', 'POST'])
 def convert_certificate():
     form = ConvertCertificateForm()
@@ -162,6 +164,7 @@ def convert_certificate():
         
     return render_template('convert_certificate.html', title='Convert Certificate', form=form)    
 
+# Eigenentwicklung
 @bp.route('/csr/download/<string:cn>')
 @login_required
 def download_csr(cn):
@@ -180,6 +183,7 @@ def download_csr(cn):
     response.mimetype = 'text/plain'
     return response
 
+# Eigenentwicklung
 @bp.route('/key/download/<string:cn>')
 @login_required
 def download_key(cn):
@@ -198,6 +202,7 @@ def download_key(cn):
     response.mimetype = 'text/plain'
     return response
 
+# Eigenentwicklung
 @bp.route('/pfx/download/<string:cn>')
 @login_required
 def download_pfx(cn):
@@ -211,6 +216,7 @@ def download_pfx(cn):
     response.headers.set('Content-Type', 'application/x-pkcs12')
     return response
 
+# Übernommen aus den Beispielen von Miguel Grinberg, ergänzt mit den eigenen Datenbankfeldern
 @bp.route('/user/<username>')
 @login_required
 def user(username):
@@ -226,6 +232,7 @@ def user(username):
     return render_template('user.html', title='User Table', user=user, certificates=certificates,
                            next_url=next_url, prev_url=prev_url)
 
+# Übernommen aus den Beispielen von Miguel Grinberg
 @bp.route('/edit_profile', methods=['GET', 'POST'])
 @login_required
 def edit_profile():
@@ -242,7 +249,7 @@ def edit_profile():
     return render_template('edit_profile.html', title='Edit Profile',
                            form=form)
 
-
+# Eigenentwicklung
 @bp.route('/delete_certificate/<int:id>', methods=['POST'])
 @login_required
 def delete_certificate(id):

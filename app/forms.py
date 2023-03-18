@@ -3,8 +3,10 @@ from wtforms import StringField, PasswordField, BooleanField, SubmitField, TextA
 from wtforms.validators import ValidationError, DataRequired, Email, EqualTo, Length
 from app.models import User, Certificate
 
+# Eigenentwickliung
 class CSRForm(FlaskForm):
     country = StringField('Country', validators=[DataRequired(), Length(min=2, max=2)], default='CH')
+    # Eigenentwickelte Validatoren
     state = SelectField('State', validators=[DataRequired()], default = 'Bern',choices = [
         ('Aargau', 'Aargau'),
         ('Appenzell Ausserrhoden', 'Appenzell Ausserrhoden'),
@@ -32,6 +34,7 @@ class CSRForm(FlaskForm):
         ('Zug', 'Zug'),
         ('Zürich', 'Zürich'),
     ] )
+    # Eigenentwickelte Validatoren
     locality = SelectField('Locality', validators=[DataRequired()], default = 'Bern',choices = [
         ('Aargau', 'Aargau'),
         ('Appenzell Ausserrhoden', 'Appenzell Ausserrhoden'),
@@ -65,12 +68,14 @@ class CSRForm(FlaskForm):
     subject_alternative_name = StringField('Subject Alternative Name')
     submit = SubmitField('Generate CSR')
 
+# Eigenentwickliung
 class CertForm(FlaskForm):
     common_name = StringField('Common Name', validators=[DataRequired()])
     certificate = TextAreaField('Certificate', validators=[DataRequired()])
     password = PasswordField('Password', validators=[DataRequired()])
     submit = SubmitField('Generate P12')
 
+# Übernommen aus den Beispielen von Miguel Grinberg
 class EditProfileForm(FlaskForm):
     username = StringField('Username', validators=[DataRequired()])
     email = StringField('Email', validators=[DataRequired(), Email()])
@@ -92,7 +97,8 @@ class EditProfileForm(FlaskForm):
             user = User.query.filter_by(email=email.data).first()
             if user is not None:
                 raise ValidationError('Please use a different email address.')
-    
+
+# Eigenentwickliung
 class ConvertCertificateForm(FlaskForm):
     private_key = TextAreaField('Private Key', validators=[DataRequired()])
     public_key = TextAreaField('Public Key', validators=[DataRequired()])

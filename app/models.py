@@ -8,7 +8,7 @@ import base64
 from datetime import datetime, timedelta
 import os
 
-
+#Übernommen aus den Beispiele von Miguel Grinberg
 class PaginatedAPIMixin(object):
     @staticmethod
     def to_collection_dict(query, page, per_page, endpoint, **kwargs):
@@ -32,7 +32,7 @@ class PaginatedAPIMixin(object):
             }
         }
         return data
-
+#Übernommen aus den Beispiele von Miguel Grinberg
 class User(UserMixin, PaginatedAPIMixin, db.Model):
     id = db.Column(db.Integer, primary_key=True)
     username = db.Column(db.String(64), index=True, unique=True)
@@ -93,6 +93,7 @@ class User(UserMixin, PaginatedAPIMixin, db.Model):
 def load_user(id):
     return User.query.get(int(id))
 
+#Eigenentwicklung
 class Certificate(PaginatedAPIMixin, db.Model):
     id = db.Column(db.Integer, primary_key=True)
     user_id = db.Column(db.Integer, db.ForeignKey('user.id'))
@@ -104,21 +105,17 @@ class Certificate(PaginatedAPIMixin, db.Model):
     pfx = db.Column(db.LargeBinary)
 
     def to_dict(self):
-        data = {}
-        if g.current_user.id == self.user_id:
-            data = {
-                'id': self.id,
-                'user_id': self.user_id,
-                'csr': self.csr,
-                'key': self.key,
-                'cn': self.cn,
-                'pfx': self.pfx,
-                '_links': {
-                    'csr': url_for('api.get_csr', cn=self.cn),
-                    'key': url_for('api.get_key', cn=self.cn),
-                    'pfx': url_for('api.get_pfx', cn=self.cn),
-                }
+        data = {
+            'id': self.id,
+            'timestamp': self.timestamp.isoformat() + 'Z',
+            'cn': self.cn,
+            'organization': self.organization,
+            '_links': {
+                'csr': url_for('api.get_certificate_csr', cn=self.cn),
+                'key': url_for('api.get_certificate_key', cn=self.cn),
+                'pfx': url_for('api.download_pfx', cn=self.cn),
             }
+        }
         return data
 
 
