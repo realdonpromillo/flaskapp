@@ -5,9 +5,9 @@ RUN useradd certificates
 WORKDIR /home/certificates
 
 COPY requirements.txt requirements.txt
-RUN python -m venv praxisarbeit
-RUN praxisarbeit/bin/pip install -r requirements.txt
-RUN praxisarbeit/bin/pip install gunicorn
+RUN python -m venv venv
+RUN venv/bin/pip install -r requirements.txt
+RUN venv/bin/pip install gunicorn
 
 COPY app app
 COPY migrations migrations
